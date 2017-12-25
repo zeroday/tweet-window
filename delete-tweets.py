@@ -2,8 +2,8 @@ import tweepy
 import csv
 import os
 
-consumer_key = os.environ['TWITTER_CONSUMER_KEY']
-consumer_secret = os.environ['TWITTER_CONSUMER_SECRET']
-access_key = os.environ['TWITTER_ACCESS_KEY']
-access_secret = os.environ['TWITTER_ACCESS_SECRET']
+CONSUMER_KEY = os.environ['TWITTER_CONSUMER_KEY']
+CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
+ACCESS_KEY = os.environ['TWITTER_ACCESS_KEY']
+ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
 
