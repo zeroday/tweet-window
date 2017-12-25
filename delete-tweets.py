@@ -25,5 +25,23 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 me = api.me()
 print("Authenticated as: %s" % me.screen_name)
-rate_limit_status = api.rate_limit_status()
 print("Tweet count: %s" % me.statuses_count)
+tweet_marker = me.status.id
+
+print("latest tweet %s" % tweet_marker)
+
+not_done = True
+counter = 0
+
+while not_done:
+    rate_limit_status = api.rate_limit_status()
+    status_lookup_limits = rate_limit_status['resources']['statuses']['/statuses/lookup']
+    print("%s remaining" % status_lookup_limits['remaining'])
+    time_line = api.user_timeline(screen_name = me.screen_name, max_id = tweet_marker)
+    for tweet in time_line:
+        print("%s at %s" % (tweet.id, tweet.created_at))
+        last_tweet = tweet.id
+    tweet_marker = last_tweet
+    counter = counter + 1
+    if counter > 1:
+        not_done = False
