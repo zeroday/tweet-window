@@ -1,6 +1,7 @@
 import tweepy
 import csv
 import os
+import json
 
 CONSUMER_KEY = os.environ['TWITTER_CONSUMER_KEY']
 CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
@@ -19,4 +20,6 @@ def oauth_login(consumer_key, consumer_secret):
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
-print("Authenticated as: %s" % api.me().screen_name)
+me = api.me()
+print("Authenticated as: %s" % me.screen_name)
+rate_limit_status = api.rate_limit_status()
