@@ -8,6 +8,9 @@ CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
 ACCESS_KEY = os.environ['TWITTER_ACCESS_KEY']
 ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
 
+# Limit info from https://developer.twitter.com/en/docs/basics/rate-limits.html
+STATUS_LOOKUP_RATE_LIMIT = 300
+
 # copied from https://pushpullfork.com/i-deleted-tweets/
 def oauth_login(consumer_key, consumer_secret):
     """Authenticate with twitter using OAuth"""
