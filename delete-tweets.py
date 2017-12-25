@@ -47,11 +47,11 @@ while not_done:
         print("%s at %s" % (tweet.id, tweet.created_at))
         last_tweet = tweet.id
     tweet_marker = last_tweet
-    if application_status['remaining'] == 1:
+    if application_status['remaining'] == 5:
         reset_time = datetime.datetime.fromtimestamp(application_status['reset'])
         now = time.time()
         sleep_time = reset_time - datetime.datetime.fromtimestamp(now) + datetime.timedelta(seconds=3)
-        print(sleep_time.total_seconds())
+        print("sleeping for %s" % sleep_time.total_seconds())
         time.sleep(sleep_time.total_seconds())
     counter = counter + 1
     if counter > api_call_limit:
