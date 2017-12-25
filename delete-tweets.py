@@ -2,6 +2,8 @@ import tweepy
 import csv
 import os
 import json
+import datetime
+import time
 
 CONSUMER_KEY = os.environ['TWITTER_CONSUMER_KEY']
 CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
@@ -25,7 +27,10 @@ auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 me = api.me()
 print("Authenticated as: %s" % me.screen_name)
-print("Tweet count: %s" % me.statuses_count)
+tweet_count = me.statuses_count
+print("Tweet count: %s" % tweet_count)
+api_call_limit = int(tweet_count / 20)
+print("API call limit:%s" % api_call_limit)
 tweet_marker = me.status.id
 
 print("latest tweet %s" % tweet_marker)
@@ -35,13 +40,19 @@ counter = 0
 
 while not_done:
     rate_limit_status = api.rate_limit_status()
-    status_lookup_limits = rate_limit_status['resources']['statuses']['/statuses/lookup']
-    print("%s remaining" % status_lookup_limits['remaining'])
+    application_status = rate_limit_status['resources']['application']['/application/rate_limit_status']
+    print("%s remaining" % application_status['remaining'])
     time_line = api.user_timeline(screen_name = me.screen_name, max_id = tweet_marker)
     for tweet in time_line:
         print("%s at %s" % (tweet.id, tweet.created_at))
         last_tweet = tweet.id
     tweet_marker = last_tweet
+    if application_status['remaining'] == 1:
+        reset_time = datetime.datetime.fromtimestamp(application_status['reset'])
+        now = time.time()
+        sleep_time = reset_time - datetime.datetime.fromtimestamp(now) + datetime.timedelta(seconds=3)
+        print(sleep_time.total_seconds())
+        time.sleep(sleep_time.total_seconds())
     counter = counter + 1
-    if counter > 1:
+    if counter > api_call_limit:
         not_done = False
