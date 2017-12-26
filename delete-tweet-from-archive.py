@@ -50,19 +50,23 @@ print("Authenticated as: %s" % me.screen_name)
 for tweet in tweets:
     tweet_id = tweet[0]
     tweet_created_at = datetime.datetime.strptime(tweet[3],'%Y-%m-%d %H:%M:%S +0000')
-    rate_limit_status = api.rate_limit_status()
-    application_status = rate_limit_status['resources']['application']['/application/rate_limit_status']
-    print("%s remaining" % application_status['remaining'])
     age = time.time() - (tweet_created_at - datetime.datetime(1970,1,1)).total_seconds()
     if (age > TWEET_AGE_LIMIT):
+        rate_limit_status = api.rate_limit_status()
+        application_status = rate_limit_status['resources']['application']['/application/rate_limit_status']
+        print("%s remaining" % application_status['remaining'])
+        if application_status['remaining'] < 10:
+            reset_time = datetime.datetime.fromtimestamp(application_status['reset'])
+            now = time.time()
+            sleep_time = (reset_time - datetime.datetime.fromtimestamp(now)) + datetime.timedelta(seconds=60)
+            print("sleeping for %s seconds" % sleep_time.total_seconds())
+            time.sleep(sleep_time.total_seconds())
         delete_tweet = True
-        api.destroy_status(tweet_id)
+        try:
+            api.destroy_status(tweet_id)
+        except:
+            print("That tweet was probably deleted already.")
     else:
         delete_tweet = False
     print("%s DELETE:%s" % (tweet_created_at, delete_tweet))
-    if application_status['remaining'] == 10:
-        reset_time = datetime.datetime.fromtimestamp(application_status['reset'])
-        now = time.time()
-        sleep_time = (reset_time - datetime.datetime.fromtimestamp(now)) + datetime.timedelta(seconds=60)
-        print("sleeping for %s" % sleep_time.total_seconds())
-        time.sleep(sleep_time.total_seconds())
+
