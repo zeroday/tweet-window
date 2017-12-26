@@ -9,6 +9,7 @@ CONSUMER_KEY = os.environ['TWITTER_CONSUMER_KEY']
 CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
 ACCESS_KEY = os.environ['TWITTER_ACCESS_KEY']
 ACCESS_SECRET = os.environ['TWITTER_ACCESS_SECRET']
+TWEET_AGE_LIMIT = 60 * 60 * 24 * 14
 
 # Limit info from https://developer.twitter.com/en/docs/basics/rate-limits.html
 STATUS_LOOKUP_RATE_LIMIT = 180
@@ -44,7 +45,12 @@ while not_done:
     print("%s remaining" % application_status['remaining'])
     time_line = api.user_timeline(screen_name = me.screen_name, max_id = tweet_marker)
     for tweet in time_line:
-        print("%s at %s" % (tweet.id, tweet.created_at))
+        age = time.time() - (tweet.created_at - datetime.datetime(1970,1,1)).total_seconds()
+        if (age > TWEET_AGE_LIMIT):
+            delete_tweet = True
+        else:
+            delete_tweet = False
+        print("%s at %s DELETE:%s" % (tweet.id, tweet.created_at, delete_tweet))
         last_tweet = tweet.id
     tweet_marker = last_tweet
     if application_status['remaining'] == 10:
