@@ -45,9 +45,12 @@ while not_done:
     print("%s remaining" % application_status['remaining'])
     time_line = api.user_timeline(screen_name = me.screen_name, max_id = tweet_marker)
     for tweet in time_line:
+        # age detection copied from
+        # https://stackoverflow.com/questions/23356523/how-can-i-get-the-age-of-a-tweet-using-tweepy
         age = time.time() - (tweet.created_at - datetime.datetime(1970,1,1)).total_seconds()
         if (age > TWEET_AGE_LIMIT):
             delete_tweet = True
+            api.destroy_status(tweet.id)
         else:
             delete_tweet = False
         print("%s at %s DELETE:%s" % (tweet.id, tweet.created_at, delete_tweet))
